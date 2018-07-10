@@ -40,8 +40,13 @@ public class ResourceManager {
     CACHEABLE_EXTENSIONS.add( "json" );
     CACHEABLE_EXTENSIONS.add( "cdfde" );
 
-    this.isCacheEnabled = Boolean.parseBoolean( CdeEngine.getInstance().getEnvironment().getResourceLoader()
-      .getPluginSetting( this.getClass(), "pentaho-cdf-dd/enable-cache" ) );
+    if ( CdeEngine.getInstance() != null
+            && CdeEngine.getInstance().getEnvironment() != null
+            && CdeEngine.getInstance().getEnvironment().getResourceLoader() != null ) {
+
+      this.isCacheEnabled = Boolean.parseBoolean( CdeEngine.getInstance().getEnvironment().getResourceLoader()
+              .getPluginSetting( this.getClass(), "pentaho-cdf-dd/enable-cache" ) );
+    }
   }
 
   public static ResourceManager getInstance() {

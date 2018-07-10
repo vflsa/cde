@@ -74,6 +74,17 @@ public class CdeConstants {
     public static final String CDF_STRUCTURE = "cdfstructure";
 
     public static final String DATA = "data";
+
+    public static final String TITLE = "title";
+    public static final String AUTHOR = "author";
+    public static final String DESCRIPTION = "description";
+    public static final String OPERATION = "operation";
+    public static final String RENDERER_TYPE = "rendererType";
+    public static final String WIDGET = "widget";
+    public static final String WIDGET_NAME = "widgetName";
+    public static final String WIDGET_PARAMETERS = "widgetParameters";
+    public static final String DASHBOARD_STRUCTURE = "cdfstructure";
+    public static final String REQUIRE = "require";
   }
 
   public static class DashboardSupportedTypes {

@@ -26,6 +26,8 @@ import pt.webdetails.cpf.PluginEnvironment;
 import pt.webdetails.cpf.bean.IBeanFactory;
 import pt.webdetails.cpf.context.api.IUrlProvider;
 import pt.webdetails.cpf.repository.api.IBasicFile;
+import pt.webdetails.cpf.repository.api.IRWAccess;
+import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.resources.IResourceLoader;
 import pt.webdetails.cpf.repository.api.IContentAccessFactory;
 import pt.webdetails.cpf.session.IUserSession;
@@ -88,5 +90,6 @@ public interface ICdeEnvironment {
   IUserSession getUserSession();
 
   boolean canCreateContent();
+
 
 }

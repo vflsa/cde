@@ -84,10 +84,12 @@ public class JsonUtils {
 
   public static JXPathContext toJXPathContext( JSONObject json ) throws JSONException {
     Map<String, Object> hashMap = new HashMap<String, Object>();
-    Iterator<String> it = json.keys();
-    while ( it.hasNext() ) {
-      String key = it.next();
-      hashMap.put( key, processValue( json.get( key ) ) );
+    if( json != null ) {
+      Iterator<String> it = json.keys();
+      while (it.hasNext()) {
+        String key = it.next();
+        hashMap.put(key, processValue(json.get(key)));
+      }
     }
     return JXPathContext.newContext( hashMap );
   }

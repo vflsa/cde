@@ -174,8 +174,9 @@ public class DashboardStructure implements IDashboardStructure {
 
     // Any data sources?
     if ( cdaRenderer.isEmpty() ) {
-      access.deleteFile( cdaFileName );
-
+      if( access.fileExists( cdaFileName ) ) {
+        access.deleteFile(cdaFileName);
+      }
     } else {
       // throws Exception ????
       String cdaText = cdaRenderer.render();

@@ -96,8 +96,10 @@ public final class DependenciesManager {
       InputStream in = null;
       try {
         in = CdeEnvironment.getPluginSystemReader().getFileInputStream( INCLUDES_PROP );
-        props.load( in );
-      } finally {
+        if( in != null) {
+          props.load(in);
+        }
+      }  finally {
         IOUtils.closeQuietly( in );
       }
       PathOrigin origin = new StaticSystemOrigin( "" );
@@ -196,7 +198,9 @@ public final class DependenciesManager {
       InputStream in = null;
       try {
         in = CdeEnvironment.getPluginSystemReader().getFileInputStream( EXTRA_INCLUDES_PROP );
-        extraProps.load( in );
+        if (in != null) {
+          extraProps.load(in);
+        }
       } finally {
         IOUtils.closeQuietly( in );
       }

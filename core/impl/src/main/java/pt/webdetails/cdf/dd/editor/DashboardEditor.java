@@ -57,7 +57,13 @@ public class DashboardEditor {
       boolean isDefault,
       boolean isRequire ) throws Exception {
 
-    ResourceManager resMgr = ResourceManager.getInstance();
+    ResourceManager resMgr = null;
+
+    try {
+      resMgr = ResourceManager.getInstance();
+    } catch ( Exception ex ) {
+      logger.fatal( "Unable to get ResourceManager instance", ex );
+    }
     IReadAccess sysReader = CdeEnvironment.getPluginSystemReader();
 
     final HashMap<String, String> tokens = buildReplacementTokenMap( wcdfPath, scheme, debugMode, resMgr, sysReader );
@@ -100,15 +106,20 @@ public class DashboardEditor {
     tokens.put( CdeConstants.FILE_NAME_TAG,
         URLEncoder.encode( DashboardWcdfDescriptor.toStructurePath( wcdfPath ), CharsetHelper.getEncoding() ) );
 
-    IUrlProvider urlProvider = CdeEngine.getEnv().getPluginEnv().getUrlProvider();
-    final String apiPath = urlProvider.getPluginBaseUrl();
+    IUrlProvider urlProvider = null;
+    try {
+      urlProvider = CdeEngine.getEnv().getPluginEnv().getUrlProvider();
+    } catch ( Exception ex ) {
+      logger.fatal( "Unable to get URL Provider", ex );
+    }
+    final String apiPath = ( urlProvider != null ? urlProvider.getPluginBaseUrl() : "" );
     tokens.put( CdeConstants.SERVER_URL_TAG, apiPath );
     // external api
     ICdeApiPathProvider extApi = CdeEngine.getEnv().getExtApi();
     tokens.put( CdeConstants.DATA_URL_TAG, CdeEngine.getInstance().getEnvironment().getApplicationBaseContentUrl()
         + "Syncronize" );
 
-    tokens.put( CdeConstants.Tags.Api.RENDERER, extApi.getRendererBasePath() );
+    tokens.put( CdeConstants.Tags.Api.RENDERER, ( extApi != null ? extApi.getRendererBasePath() : "" ) );
     return tokens;
   }
 
@@ -122,7 +133,7 @@ public class DashboardEditor {
       boolean isRequire ) throws IOException {
     String cacheKey = ResourceManager.buildCacheKey( wcdfPath, tokens );
     String editorPage;
-    if ( resMgr.existsInCache( cacheKey ) ) {
+    if ( resMgr != null && resMgr.existsInCache( cacheKey ) ) {
 
       editorPage = resMgr.getResourceFromCache( cacheKey );
 
@@ -143,7 +154,7 @@ public class DashboardEditor {
       }
 
       // We have the resource. Should we cache it?
-      if ( resMgr.isCacheEnabled() ) {
+      if ( resMgr != null && resMgr.isCacheEnabled() ) {
         resMgr.putResourceInCache( cacheKey, editorPage );
       }
     }
@@ -164,16 +175,16 @@ public class DashboardEditor {
 
   private static String getResource( ResourceManager resMgr, IReadAccess sysReader, String path ) throws IOException {
     final String resource;
-    if ( resMgr.existsInCache( path ) ) {
+    if ( resMgr != null && resMgr.existsInCache( path ) ) {
       resource = resMgr.getResourceFromCache( path );
     } else {
       resource = Util.toString( sysReader.getFileInputStream( path ) );
 
-      if ( resource != null ) {
+      if (  resMgr != null && resource != null ) {
         resMgr.putResourceInCache( path, resource );
       }
     }
-    if ( resource.contains( WEBAPP_PATH ) ) {
+    if ( resource != null && resource.contains( WEBAPP_PATH ) ) {
       return resource.replace( WEBAPP_PATH,
         CdeEngine.getInstance().getEnvironment().getApplicationReposUrl()
           + CdeEngine.getInstance().getEnvironment().getPluginId() + "/" );

@@ -14,13 +14,15 @@ package org.pentaho.ctools.cde.plugin.resource;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.pentaho.ctools.cdf.CdfStyles;
 import pt.webdetails.cdf.dd.IPluginResourceLocationManager;
 import pt.webdetails.cpf.packager.origin.PathOrigin;
 
 /**
  * Class used for accessing custom components provided by other plugins.
  * Note: In OSGi environments custom components are only made available via the available
- * {@code IReadAccess} resource services. This is a dummy class that is currently required by CDE core.
+ * {@code IReadAccess} resource services.
  */
 public class PluginResourceLocationManager implements IPluginResourceLocationManager {
 
@@ -31,7 +33,7 @@ public class PluginResourceLocationManager implements IPluginResourceLocationMan
 
   @Override
   public String getStyleResourceLocation( String styleName ) {
-    return null;
+    return new CdfStyles().getResourceLocation( styleName );
   }
 
   @Override

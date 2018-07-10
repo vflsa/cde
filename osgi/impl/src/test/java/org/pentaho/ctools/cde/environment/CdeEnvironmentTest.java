@@ -19,19 +19,25 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.ctools.cde.datasources.manager.DataSourceManager;
+import org.pentaho.ctools.cde.extapi.CdeApiPathProvider;
 import org.pentaho.ctools.cde.plugin.resource.PluginResourceLocationManager;
 import pt.webdetails.cdf.dd.IPluginResourceLocationManager;
 import pt.webdetails.cdf.dd.datasources.IDataSourceManager;
+import pt.webdetails.cdf.dd.extapi.ICdeApiPathProvider;
 import pt.webdetails.cdf.dd.model.core.writer.IThingWriterFactory;
 import pt.webdetails.cdf.dd.model.inst.Dashboard;
 import pt.webdetails.cdf.dd.model.inst.writer.cdfrunjs.amd.CdfRunJsThingWriterFactory;
 import pt.webdetails.cdf.dd.model.inst.writer.cdfrunjs.dashboard.CdfRunJsDashboardWriteContext;
 import pt.webdetails.cdf.dd.model.inst.writer.cdfrunjs.dashboard.CdfRunJsDashboardWriteOptions;
 import pt.webdetails.cdf.dd.structure.DashboardWcdfDescriptor;
+import pt.webdetails.cpf.api.IContentAccessFactoryExtended;
+import pt.webdetails.cpf.api.IUserContentAccessExtended;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IContentAccessFactory;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
+
+import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -62,7 +68,7 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testGetLocale() {
-    assertNull( cdeEnvironment.getLocale() );
+    assertEquals(Locale.ENGLISH, cdeEnvironment.getLocale() );
   }
 
   @Test
@@ -73,11 +79,26 @@ public class CdeEnvironmentTest {
   @Test
   public void testGetCdfIncludes() throws Exception {
     assertNull( cdeEnvironment.getCdfIncludes( null, null, false, false, null, null ) );
+
+    final String expected = "\t<!-- cdf-blueprint-script-includes -->\n"
+            + "\t<script language=\"javascript\" type=\"text/javascript\" "
+            + "src=\"/@pentaho/dependencies/1.0/cdf/js/cdf-blueprint-script-includes.js\"></script>\n"
+            + "\t<!-- cdf-blueprint-style-includes -->\n"
+            + "\t<link href=\"/@pentaho/dependencies/1.0/cdf/css/cdf-blueprint-style-includes.css\" rel=\"stylesheet\" "
+            + "type=\"text/css\" />\n"
+            + "\t<!-- cdf-blueprint-ie8style-includes -->\n"
+            + "\t<!--[if lte IE 8]>\n"
+            + "\t  <link href=\"/@pentaho/dependencies/1.0/cdf/css-legacy/blueprint/ie.css\" "
+            + "rel=\"stylesheet\" type=\"text/css\" />\n"
+            + "\t<![endif]-->\n"
+            + "\t<link href=\"/@pentaho/dependencies/1.0/cdf/css/styles.css\" rel=\"stylesheet\" type=\"text/css\" />\n"
+            + "\n";
+    assertEquals( expected, cdeEnvironment.getCdfIncludes( null, "blueprint", false, false, null, "http" ) );
   }
 
   @Test
   public void testGetExtApi() {
-    assertNull( cdeEnvironment.getExtApi() );
+    assertThat( cdeEnvironment.getExtApi(), instanceOf( org.pentaho.ctools.cde.extapi.CdeApiPathProvider.class ) );
   }
 
   @Test
@@ -102,7 +123,7 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testGetApplicationReposUrl() {
-    assertEquals( StringUtils.EMPTY, cdeEnvironment.getApplicationReposUrl() );
+    assertEquals( "/@pentaho/dependencies/1.0/", cdeEnvironment.getApplicationReposUrl() );
   }
 
   @Test
@@ -131,7 +152,7 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testGetPluginId() {
-    assertEquals( "cde", cdeEnvironment.getPluginId() );
+    assertEquals( "cdf", cdeEnvironment.getPluginId() );
   }
 
   @Test
@@ -147,13 +168,13 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testGetApplicationBaseContentUrl() {
-    final String expected = "/plugin/cde/";
+    final String expected = "/plugin/cdf/";
     assertEquals( expected, cdeEnvironment.getApplicationBaseContentUrl() );
   }
 
   @Test
   public void testGetRepositoryBaseContentUrl() {
-    final String expected = "/plugin/cde/res/";
+    final String expected = "/plugin/cdf/res/";
     assertEquals( expected, cdeEnvironment.getRepositoryBaseContentUrl() );
   }
 
@@ -203,10 +224,10 @@ public class CdeEnvironmentTest {
   @Test
   public void testGetCdeXml() {
     final IBasicFile file = Mockito.mock( IBasicFile.class );
-    final IUserContentAccess userContentAccess = Mockito.mock( IUserContentAccess.class );
+    final IUserContentAccessExtended userContentAccess = Mockito.mock( IUserContentAccessExtended.class );
     when( userContentAccess.fileExists( anyString() ) ).thenReturn( true );
     when( userContentAccess.fetchFile( anyString() ) ).thenReturn( file );
-    final IContentAccessFactory contentAccessFactory = Mockito.mock( IContentAccessFactory.class );
+    final IContentAccessFactoryExtended contentAccessFactory = Mockito.mock( IContentAccessFactoryExtended.class );
     when( contentAccessFactory.getUserContentAccess( anyString()) ).thenReturn( userContentAccess );
     cdeEnvironment.setContentAccessFactory( contentAccessFactory );
     assertEquals( file, cdeEnvironment.getCdeXml() );
@@ -225,10 +246,10 @@ public class CdeEnvironmentTest {
   @Test
   public void testGetCdeXmlViaUserContentAccess() {
     final IBasicFile file = Mockito.mock( IBasicFile.class );
-    final IUserContentAccess userContentAccess = Mockito.mock( IUserContentAccess.class );
+    final IUserContentAccessExtended userContentAccess = Mockito.mock( IUserContentAccessExtended.class );
     when( userContentAccess.fileExists( anyString() ) ).thenReturn( true );
     when( userContentAccess.fetchFile( anyString() ) ).thenReturn( file );
-    final IContentAccessFactory contentAccessFactory = Mockito.mock( IContentAccessFactory.class );
+    final IContentAccessFactoryExtended contentAccessFactory = Mockito.mock( IContentAccessFactoryExtended.class );
     when( contentAccessFactory.getUserContentAccess( anyString()) ).thenReturn( userContentAccess );
     cdeEnvironment.setContentAccessFactory( contentAccessFactory );
 
@@ -238,12 +259,12 @@ public class CdeEnvironmentTest {
   @Test
   public void testGetCdeXmlViaReadAccess() {
     final IBasicFile file = Mockito.mock( IBasicFile.class );
-    final IUserContentAccess userContentAccess = Mockito.mock( IUserContentAccess.class );
+    final IUserContentAccessExtended userContentAccess = Mockito.mock( IUserContentAccessExtended.class );
     when( userContentAccess.fileExists( anyString() ) ).thenReturn( false );
     final IReadAccess readAccess = Mockito.mock( IReadAccess.class );
     when( readAccess.fileExists( anyString() ) ).thenReturn( true );
     when( readAccess.fetchFile( anyString() ) ).thenReturn( file );
-    final IContentAccessFactory contentAccessFactory = Mockito.mock( IContentAccessFactory.class );
+    final IContentAccessFactoryExtended contentAccessFactory = Mockito.mock( IContentAccessFactoryExtended.class );
     when( contentAccessFactory.getUserContentAccess( anyString()) ).thenReturn( userContentAccess );
     when( contentAccessFactory.getPluginSystemReader( anyObject() ) ).thenReturn( readAccess );
     cdeEnvironment.setContentAccessFactory( contentAccessFactory );
@@ -253,11 +274,11 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testGetCdeXmlNoFileFound() {
-    final IUserContentAccess userContentAccess = Mockito.mock( IUserContentAccess.class );
+    final IUserContentAccessExtended userContentAccess = Mockito.mock( IUserContentAccessExtended.class );
     when( userContentAccess.fileExists( anyString() ) ).thenReturn( false );
     final IReadAccess readAccess = Mockito.mock( IReadAccess.class );
     when( readAccess.fileExists( anyString() ) ).thenReturn( false );
-    final IContentAccessFactory contentAccessFactory = Mockito.mock( IContentAccessFactory.class );
+    final IContentAccessFactoryExtended contentAccessFactory = Mockito.mock( IContentAccessFactoryExtended.class );
     when( contentAccessFactory.getUserContentAccess( anyString()) ).thenReturn( userContentAccess );
     when( contentAccessFactory.getPluginSystemReader( anyObject() ) ).thenReturn( readAccess );
     cdeEnvironment.setContentAccessFactory( contentAccessFactory );
@@ -272,7 +293,7 @@ public class CdeEnvironmentTest {
 
   @Test
   public void testSetContentAccessFactory() {
-    IContentAccessFactory expected = Mockito.mock( IContentAccessFactory.class );
+    IContentAccessFactoryExtended expected = Mockito.mock( IContentAccessFactoryExtended.class );
     cdeEnvironment.setContentAccessFactory( expected );
     assertEquals( expected, cdeEnvironment.getContentAccessFactory() );
   }
