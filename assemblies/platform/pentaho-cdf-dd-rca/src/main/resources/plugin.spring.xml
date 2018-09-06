@@ -77,4 +77,18 @@
     <property name="cache" ref="cache"/>
   </bean>
 
+  <bean id="foundry.push.sample.page" class="org.pentaho.ctools.cde.push.page.PushPageSample"/>
+
+  <!-- Websocket configuration bean -->
+  <bean id="corsUtil" class="pt.webdetails.cdf.dd.util.CorsUtil" factory-method="getInstance" />
+  <bean id="foundry.plataform.websocket.sample" class="org.pentaho.platform.web.websocket.WebsocketEndpointConfig">
+    <constructor-arg value="sample"/>
+    <constructor-arg type="java.lang.Class" value="org.pentaho.ctools.cde.push.PushSample"/>
+    <constructor-arg>
+      <list>
+        <value>CDE-sample</value>
+      </list>
+    </constructor-arg>
+    <constructor-arg value="#{corsUtil.isCorsRequestOriginAllowedPredicate()}" />
+  </bean>
 </beans>

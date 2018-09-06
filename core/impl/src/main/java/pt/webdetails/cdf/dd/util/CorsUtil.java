@@ -19,6 +19,7 @@ import pt.webdetails.cpf.utils.AbstractCorsUtil;
 import pt.webdetails.cpf.utils.CsvUtil;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * CDE CorsUtil implementation
@@ -52,5 +53,14 @@ public class CorsUtil extends AbstractCorsUtil {
     return CsvUtil.parseCsvString(
       CdeEngine.getInstance().getEnvironment().getResourceLoader().getPluginSetting( CorsUtil.class,
         CdeConstants.PLUGIN_SETTINGS_CROSS_DOMAIN_RESOURCES_WHITELIST ) );
+  }
+
+  /**
+   * Returns a predicate which evaluates if a domain is in the list of whitelisted domains.
+   * @return a {@link Predicate
+  } that checks if the {@link String} domain received is present in the whitelist domains.
+    */
+  public Predicate<String> isCorsRequestOriginAllowedPredicate( ) {
+    return domain -> isCorsAllowed() && this.getDomainWhitelist().contains( domain );
   }
 }

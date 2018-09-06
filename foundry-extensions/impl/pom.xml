@@ -75,5 +75,22 @@
       <version>1.5.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- WebSockets POC -->
+    <dependency>
+      <groupId>javax.websocket</groupId>
+      <artifactId>javax.websocket-api</artifactId>
+      <version>${javax.websocket-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-api</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
   </dependencies>
 </project>
